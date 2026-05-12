@@ -1,0 +1,13 @@
+{
+  "name": "folio-and-ink-bookstore",
+  "version": "1.0.0",
+  "description": "Professional bookstore web app with admin panel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["bookstore", "nodejs", "admin-panel"],
+  "author": "Folio & Ink",
+  "license": "MIT"
+}
