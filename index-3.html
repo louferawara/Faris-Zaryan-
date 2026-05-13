@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FARIS ZARYAN — Bookstore</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:       #020818;
+  --glass:    rgba(255,255,255,0.04);
+  --glass-md: rgba(255,255,255,0.08);
+  --glass-hi: rgba(255,255,255,0.13);
+  --border:   rgba(99,179,255,0.18);
+  --bhi:      rgba(99,179,255,0.45);
+  --cyan:     #00d4ff;
+  --cdim:     rgba(0,212,255,0.15);
+  --cglow:    0 0 24px rgba(0,212,255,0.4);
+  --blue:     #3b82f6;
+  --violet:   #8b5cf6;
+  --pink:     #ec4899;
+  --gold:     #fbbf24;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --text:     #e2eeff;
+  --muted:    #6b8db8;
+  --dim:      #2d4a7a;
+  --fh:       'Orbitron',sans-serif;
+  --fb:       'Exo 2',sans-serif;
+  --r:        12px;
+  --rl:       20px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* BG */
+.bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(0,100,255,.12),transparent 60%),
+             radial-gradient(ellipse 60% 40% at 80% 80%,rgba(139,92,246,.1),transparent 60%),
+             radial-gradient(ellipse 40% 30% at 60% 30%,rgba(0,212,255,.06),transparent 50%),var(--bg);}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.025;
+  background-image:linear-gradient(rgba(99,179,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(99,179,255,1) 1px,transparent 1px);
+  background-size:60px 60px;}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.35;pointer-events:none;z-index:0;animation:orbf 12s ease-in-out infinite;}
+.o1{width:400px;height:400px;background:rgba(0,212,255,.15);top:-100px;left:-100px;}
+.o2{width:350px;height:350px;background:rgba(139,92,246,.12);bottom:0;right:-80px;animation-delay:-4s;}
+.o3{width:250px;height:250px;background:rgba(59,130,246,.1);top:50%;left:50%;animation-delay:-8s;}
+@keyframes orbf{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-40px) scale(1.05);}66%{transform:translate(-20px,20px) scale(.95);}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:68px;background:rgba(2,8,24,.8);
+  backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:var(--fh);font-size:1.05rem;font-weight:900;letter-spacing:.15em;cursor:pointer;
+  background:linear-gradient(90deg,var(--cyan),var(--blue),var(--violet));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links{display:flex;gap:.2rem;}
+.nl{background:none;border:none;color:var(--muted);cursor:pointer;font-family:var(--fb);font-size:.8rem;
+  font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:.45rem 1rem;border-radius:8px;transition:all .2s;}
+.nl:hover,.nl.active{color:var(--cyan);background:var(--cdim);}
+.nav-right{display:flex;gap:.6rem;align-items:center;}
+.btn-cart{display:flex;align-items:center;gap:.5rem;
+  background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(59,130,246,.15));
+  border:1px solid rgba(0,212,255,.35);color:var(--cyan);padding:.45rem 1.1rem;border-radius:8px;
+  font-family:var(--fb);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-cart:hover{background:rgba(0,212,255,.22);box-shadow:var(--cglow);}
+.cbadge{display:inline-flex;align-items:center;justify-content:center;background:var(--cyan);
+  color:var(--bg);width:18px;height:18px;border-radius:50%;font-size:.68rem;font-weight:700;}
+.btn-adm{background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(236,72,153,.15));
+  border:1px solid rgba(139,92,246,.4);color:#c4b5fd;padding:.45rem 1.1rem;border-radius:8px;
+  font-family:var(--fb);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-adm:hover{background:rgba(139,92,246,.3);box-shadow:0 0 20px rgba(139,92,246,.4);}
+
+/* HERO */
+.hero{position:relative;z-index:1;padding:7rem 2rem 4rem;text-align:center;overflow:hidden;}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--cdim);border:1px solid rgba(0,212,255,.3);color:var(--cyan);
+  font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  padding:.35rem 1rem;border-radius:100px;margin-bottom:2rem;animation:fup .8s ease both;}
+.hero-tag::before{content:'◆';font-size:.5rem;}
+.hero h1{font-family:var(--fh);font-size:clamp(2rem,7vw,5.5rem);font-weight:900;
+  line-height:1.05;letter-spacing:.04em;margin-bottom:1.5rem;animation:fup .9s .1s ease both;}
+.h1-l1{display:block;color:var(--text);}
+.h1-l2{display:block;
+  background:linear-gradient(90deg,var(--cyan) 0%,var(--blue) 40%,var(--violet) 80%,var(--pink) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 30px rgba(0,212,255,.4));}
+.hero-sub{max-width:520px;margin:0 auto 3rem;color:var(--muted);line-height:1.8;font-size:1rem;
+  font-weight:300;animation:fup 1s .2s ease both;}
+.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fup 1s .3s ease both;}
+.btn-p{background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--bg);border:none;
+  padding:.85rem 2.2rem;border-radius:10px;font-family:var(--fb);font-size:.9rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .25s;
+  box-shadow:0 4px 24px rgba(0,212,255,.3);}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,212,255,.5);}
+.btn-s{background:var(--glass-md);border:1px solid var(--bhi);color:var(--text);
+  padding:.85rem 2rem;border-radius:10px;font-family:var(--fb);font-size:.9rem;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .25s;backdrop-filter:blur(12px);}
+.btn-s:hover{background:var(--glass-hi);border-color:var(--cyan);color:var(--cyan);}
+.hero-stats{display:flex;justify-content:center;gap:3rem;margin-top:4rem;flex-wrap:wrap;animation:fup 1s .4s ease both;}
+.hstat-val{font-family:var(--fh);font-size:1.8rem;font-weight:700;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hstat-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:.2rem;}
+@keyframes fup{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+/* SEARCH */
+.search-wrap{position:relative;z-index:1;padding:0 2rem 2.5rem;max-width:800px;margin:0 auto;}
+.sbox{display:flex;background:var(--glass-md);border:1px solid var(--bhi);
+  border-radius:14px;overflow:hidden;backdrop-filter:blur(20px);transition:all .3s;}
+.sbox:focus-within{border-color:var(--cyan);box-shadow:var(--cglow);}
+.sicon{display:flex;align-items:center;padding:0 1rem;color:var(--muted);font-size:1rem;}
+.sbox input{flex:1;background:none;border:none;outline:none;color:var(--text);
+  font-family:var(--fb);font-size:.95rem;padding:.9rem .5rem;}
+.sbox input::placeholder{color:var(--dim);}
+.sbox button{background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;color:var(--bg);
+  padding:0 1.8rem;font-family:var(--fb);font-size:.8rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:opacity .2s;}
+.sbox button:hover{opacity:.85;}
+
+/* CATEGORIES */
+.cat-bar{position:relative;z-index:1;display:flex;gap:.6rem;flex-wrap:wrap;
+  justify-content:center;padding:0 2rem 3rem;}
+.chip{background:var(--glass);border:1px solid var(--border);color:var(--muted);
+  padding:.4rem 1.2rem;border-radius:100px;font-size:.76rem;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;backdrop-filter:blur(12px);}
+.chip:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cdim);}
+.chip.on{background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(59,130,246,.2));
+  border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px rgba(0,212,255,.25);}
+
+/* SECTION */
+.sec{position:relative;z-index:1;padding:0 2rem 5rem;max-width:1300px;margin:0 auto;}
+.sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:2.5rem;}
+.sec-title{font-family:var(--fh);font-size:1.2rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;display:flex;align-items:center;gap:.75rem;}
+.sec-title::before{content:'';display:block;width:4px;height:24px;
+  background:linear-gradient(180deg,var(--cyan),var(--violet));border-radius:2px;}
+.btn-va{background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem 1rem;
+  border-radius:8px;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-va:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* BOOK GRID */
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.5rem;}
+.bcard{position:relative;border-radius:var(--rl);overflow:hidden;background:var(--glass);
+  border:1px solid var(--border);backdrop-filter:blur(16px);
+  transition:all .35s cubic-bezier(.23,1,.32,1);cursor:pointer;}
+.bcard::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.05),transparent 60%);
+  pointer-events:none;border-radius:inherit;}
+.bcard:hover{transform:translateY(-8px) scale(1.015);border-color:rgba(0,212,255,.5);
+  box-shadow:0 28px 64px rgba(0,0,0,.6),0 0 32px rgba(0,212,255,.2);}
+.bcover{aspect-ratio:2/3;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:1.5rem 1rem;text-align:center;position:relative;overflow:hidden;}
+.bcover::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),transparent 50%,rgba(0,0,0,.3));}
+.bctitle{font-family:var(--fh);font-size:.82rem;font-weight:700;line-height:1.3;
+  position:relative;z-index:1;text-shadow:0 2px 8px rgba(0,0,0,.5);}
+.bcsub{font-size:.62rem;opacity:.7;margin-top:.4rem;font-style:italic;
+  position:relative;z-index:1;text-shadow:0 1px 4px rgba(0,0,0,.5);}
+.bbadge{position:absolute;top:10px;left:10px;z-index:2;padding:.18rem .55rem;
+  border-radius:6px;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+.bb-bestseller{background:rgba(251,191,36,.9);color:#1a0a00;}
+.bb-new{background:rgba(16,185,129,.9);color:#fff;}
+.bb-sale{background:rgba(239,68,68,.9);color:#fff;}
+.binfo{padding:1rem;border-top:1px solid var(--border);}
+.bstars{color:var(--gold);font-size:.7rem;margin-bottom:.35rem;}
+.btitle{font-weight:600;font-size:.88rem;margin-bottom:.2rem;line-height:1.3;}
+.bauthor{color:var(--muted);font-size:.75rem;margin-bottom:.7rem;font-weight:300;}
+.bfooter{display:flex;justify-content:space-between;align-items:center;gap:.5rem;}
+.bprice{font-family:var(--fh);font-size:.95rem;font-weight:700;color:var(--cyan);}
+.btn-add{background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(59,130,246,.2));
+  border:1px solid rgba(0,212,255,.4);color:var(--cyan);padding:.3rem .75rem;border-radius:7px;
+  font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn-add:hover{background:rgba(0,212,255,.3);box-shadow:0 0 12px rgba(0,212,255,.3);}
+
+/* PAGE */
+.psec{position:relative;z-index:1;padding:4rem 2rem 5rem;max-width:900px;margin:0 auto;}
+.ptitle{font-family:var(--fh);font-size:2rem;font-weight:900;letter-spacing:.08em;margin-bottom:1.5rem;
+  background:linear-gradient(90deg,var(--cyan),var(--violet));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.pbox{color:var(--muted);line-height:1.9;font-size:1rem;font-weight:300;
+  background:var(--glass);border:1px solid var(--border);border-radius:var(--rl);
+  padding:2rem;backdrop-filter:blur(16px);}
+.citem{display:flex;align-items:center;gap:1rem;padding:1rem;border-radius:10px;margin-bottom:.75rem;
+  background:var(--glass);border:1px solid var(--border);transition:all .2s;}
+.citem:hover{border-color:var(--cyan);background:var(--cdim);}
+.cicon{font-size:1.3rem;width:40px;text-align:center;}
+.ctext{color:var(--text);font-size:.95rem;}
+
+/* CART */
+.overlay{display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(2,8,24,.7);backdrop-filter:blur(6px);}
+.overlay.open{display:flex;align-items:stretch;justify-content:flex-end;}
+.cart-panel{width:min(440px,100vw);height:100vh;overflow-y:auto;
+  background:rgba(5,15,46,.94);backdrop-filter:blur(24px);border-left:1px solid var(--border);
+  padding:2rem;animation:sIn .3s cubic-bezier(.23,1,.32,1);display:flex;flex-direction:column;}
+@keyframes sIn{from{transform:translateX(100%);}to{transform:translateX(0);}}
+.cart-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;}
+.cart-hdr h2{font-family:var(--fh);font-size:1.1rem;letter-spacing:.1em;color:var(--cyan);}
+.xbtn{background:var(--glass);border:1px solid var(--border);color:var(--text);
+  width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:1rem;transition:all .2s;}
+.xbtn:hover{border-color:var(--cyan);color:var(--cyan);}
+.citem-row{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border);}
+.cthumb{width:54px;height:72px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;font-size:.52rem;font-family:var(--fh);font-weight:700;
+  text-align:center;padding:.3rem;line-height:1.2;border:1px solid rgba(255,255,255,.1);}
+.cinfo{flex:1;}
+.cititle{font-weight:600;font-size:.88rem;margin-bottom:.2rem;}
+.ciauthor{color:var(--muted);font-size:.75rem;margin-bottom:.5rem;}
+.qrow{display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;}
+.qbtn{background:var(--glass-md);border:1px solid var(--border);color:var(--cyan);
+  width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:700;transition:all .2s;}
+.qbtn:hover{background:var(--cdim);border-color:var(--cyan);}
+.qval{font-size:.88rem;font-weight:600;min-width:20px;text-align:center;}
+.ciprice{font-family:var(--fh);font-size:.88rem;color:var(--cyan);}
+.cremove{background:none;border:none;color:var(--dim);cursor:pointer;font-size:.75rem;margin-top:.3rem;transition:color .2s;}
+.cremove:hover{color:var(--red);}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;
+  padding:1.5rem 0 1rem;margin-top:auto;border-top:1px solid var(--bhi);}
+.ct-label{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+.ct-val{font-family:var(--fh);font-size:1.4rem;color:var(--cyan);}
+.btn-co{width:100%;background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;
+  color:var(--bg);padding:1rem;font-family:var(--fb);font-size:.9rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;border-radius:10px;cursor:pointer;
+  transition:all .25s;box-shadow:0 4px 24px rgba(0,212,255,.3);}
+.btn-co:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,212,255,.5);}
+.cempty{text-align:center;padding:4rem 0;}
+.cempty-icon{font-size:3rem;margin-bottom:1rem;opacity:.3;}
+.cempty p{color:var(--muted);font-size:.95rem;}
+
+/* ADMIN */
+.adm-overlay{display:none;position:fixed;inset:0;z-index:600;
+  background:rgba(2,8,24,.87);backdrop-filter:blur(8px);}
+.adm-overlay.open{display:flex;}
+.adm-panel{width:100%;height:100vh;display:flex;overflow:hidden;animation:aFade .2s ease;}
+@keyframes aFade{from{opacity:0;}to{opacity:1;}}
+.adm-sidebar{width:250px;flex-shrink:0;background:rgba(2,8,24,.97);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;
+  padding:1.5rem 0;backdrop-filter:blur(24px);}
+.adm-logo-w{padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--border);margin-bottom:1rem;}
+.adm-logo-t{font-family:var(--fh);font-size:.95rem;font-weight:900;letter-spacing:.12em;
+  background:linear-gradient(90deg,var(--cyan),var(--violet));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.adm-logo-s{font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.15em;margin-top:.2rem;}
+.adm-nav{flex:1;padding:0 .75rem;}
+.ani{display:flex;align-items:center;gap:.75rem;padding:.75rem .85rem;border-radius:10px;
+  cursor:pointer;color:var(--muted);font-size:.82rem;font-weight:500;letter-spacing:.05em;
+  transition:all .2s;margin-bottom:.15rem;border:1px solid transparent;}
+.ani:hover{color:var(--text);background:var(--glass);border-color:var(--border);}
+.ani.on{color:var(--cyan);background:var(--cdim);border-color:rgba(0,212,255,.35);}
+.ani-icon{font-size:1rem;width:22px;text-align:center;}
+.adm-foot{padding:1rem 1.5rem;border-top:1px solid var(--border);}
+.adm-close{width:100%;background:var(--glass);border:1px solid var(--border);color:var(--muted);
+  padding:.6rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:all .2s;}
+.adm-close:hover{border-color:var(--red);color:var(--red);}
+.adm-main{flex:1;overflow-y:auto;padding:2.5rem;background:rgba(5,12,40,.6);}
+.as{display:none;}
+.as.on{display:block;}
+.apt{font-family:var(--fh);font-size:1.5rem;font-weight:700;letter-spacing:.08em;margin-bottom:.4rem;
+  background:linear-gradient(90deg,var(--cyan),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.asub{color:var(--muted);font-size:.82rem;margin-bottom:2rem;}
+
+/* Stats */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;margin-bottom:2rem;}
+.scard{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;position:relative;overflow:hidden;}
+.scard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,.05),transparent);}
+.sval{font-family:var(--fh);font-size:2rem;font-weight:700;color:var(--cyan);}
+.slbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:.2rem;}
+
+/* Form */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.fg{margin-bottom:0;}
+.fg.full{grid-column:1/-1;}
+.flbl{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;}
+.fi,.fsel,.fta{width:100%;background:rgba(6,18,58,.75);border:1px solid var(--border);
+  color:var(--text);padding:.7rem 1rem;border-radius:8px;font-family:var(--fb);font-size:.88rem;
+  outline:none;transition:border .2s;}
+.fi:focus,.fsel:focus,.fta:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,212,255,.1);}
+.fsel option{background:#050f2e;}
+.fta{min-height:90px;resize:vertical;}
+.factions{display:flex;gap:.75rem;margin-top:1.5rem;flex-wrap:wrap;}
+.btn-save{background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;color:var(--bg);
+  padding:.7rem 1.8rem;border-radius:8px;font-weight:700;font-size:.82rem;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-save:hover{opacity:.85;transform:translateY(-1px);}
+.btn-cancel{background:var(--glass);border:1px solid var(--border);color:var(--muted);
+  padding:.7rem 1.4rem;border-radius:8px;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.btn-cancel:hover{border-color:var(--muted);color:var(--text);}
+.btn-danger{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:var(--red);
+  padding:.7rem 1.4rem;border-radius:8px;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.btn-danger:hover{background:rgba(239,68,68,.25);}
+.swatches{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem;}
+.sw{width:30px;height:30px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .2s;}
+.sw:hover{transform:scale(1.15);}
+.sw.on{border-color:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.5);}
+
+/* Table */
+.twrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);}
+.atbl{width:100%;border-collapse:collapse;font-size:.82rem;}
+.atbl th{background:rgba(6,18,58,.95);color:var(--muted);padding:.8rem 1rem;text-align:left;
+  font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);}
+.atbl td{padding:.85rem 1rem;border-bottom:1px solid rgba(99,179,255,.07);color:var(--text);vertical-align:middle;}
+.atbl tr:last-child td{border-bottom:none;}
+.atbl tr:hover td{background:rgba(0,212,255,.03);}
+.tcover{width:32px;height:42px;border-radius:5px;}
+.spill{display:inline-block;padding:.18rem .55rem;border-radius:100px;font-size:.66rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;}
+.sp-in{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);}
+.sp-out{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+.tacts{display:flex;gap:.4rem;}
+.tbtn{background:var(--glass);border:1px solid var(--border);color:var(--muted);
+  padding:.22rem .6rem;border-radius:6px;font-size:.72rem;cursor:pointer;transition:all .2s;}
+.tbtn:hover{border-color:var(--cyan);color:var(--cyan);}
+.tbtn.del:hover{border-color:var(--red);color:var(--red);}
+
+/* Settings block */
+.sblock{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1.5rem;}
+.sblock h3{font-family:var(--fh);font-size:.88rem;letter-spacing:.1em;color:var(--cyan);margin-bottom:1rem;}
+.trow{display:flex;justify-content:space-between;align-items:center;
+  padding:.6rem 0;border-bottom:1px solid rgba(99,179,255,.07);}
+.trow:last-child{border-bottom:none;}
+.tlbl{font-size:.84rem;color:var(--muted);}
+.tog{position:relative;width:44px;height:24px;}
+.tog input{opacity:0;width:0;height:0;}
+.tslider{position:absolute;inset:0;background:var(--border);border-radius:24px;cursor:pointer;transition:.3s;}
+.tslider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:var(--dim);border-radius:50%;transition:.3s;}
+.tog input:checked+.tslider{background:var(--cyan);}
+.tog input:checked+.tslider:before{transform:translateX(20px);background:var(--bg);}
+.cat-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;}
+.ctag{display:flex;align-items:center;gap:.4rem;background:var(--glass);border:1px solid var(--border);
+  padding:.3rem .75rem;border-radius:100px;font-size:.76rem;color:var(--muted);}
+.ctag button{background:none;border:none;color:var(--dim);cursor:pointer;font-size:.75rem;transition:color .2s;}
+.ctag button:hover{color:var(--red);}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:999;
+  background:rgba(5,15,46,.97);border:1px solid var(--cyan);color:var(--cyan);
+  padding:.85rem 1.5rem;border-radius:10px;font-size:.85rem;backdrop-filter:blur(20px);
+  box-shadow:0 8px 32px rgba(0,0,0,.4),var(--cglow);display:none;max-width:320px;
+  animation:tIn .3s ease;}
+.toast.show{display:block;}
+@keyframes tIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* PASSWORD MODAL */
+.pw-overlay{display:none;position:fixed;inset:0;z-index:700;
+  background:rgba(2,8,24,.88);backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;}
+.pw-overlay.open{display:flex;}
+.pw-box{background:rgba(5,15,46,.97);border:1px solid var(--bhi);border-radius:var(--rl);
+  padding:2.5rem 2rem;width:min(380px,90vw);text-align:center;
+  box-shadow:0 24px 64px rgba(0,0,0,.6),var(--cglow);
+  animation:pwIn .3s cubic-bezier(.23,1,.32,1);}
+@keyframes pwIn{from{opacity:0;transform:translateY(24px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+.pw-icon{font-size:2.5rem;margin-bottom:1rem;}
+.pw-title{font-family:var(--fh);font-size:1.1rem;font-weight:700;letter-spacing:.12em;
+  background:linear-gradient(90deg,var(--cyan),var(--violet));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:.4rem;}
+.pw-sub{color:var(--muted);font-size:.82rem;margin-bottom:1.75rem;}
+.pw-input-wrap{position:relative;margin-bottom:1rem;}
+.pw-input-wrap input{width:100%;background:rgba(6,18,58,.8);border:1px solid var(--border);
+  color:var(--text);padding:.8rem 3rem .8rem 1rem;border-radius:10px;font-family:var(--fb);
+  font-size:.95rem;outline:none;text-align:center;letter-spacing:.08em;transition:border .2s;}
+.pw-input-wrap input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,212,255,.1);}
+.pw-eye{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;transition:color .2s;}
+.pw-eye:hover{color:var(--cyan);}
+.pw-err{color:var(--red);font-size:.78rem;min-height:1.1em;margin-bottom:.75rem;}
+.pw-actions{display:flex;gap:.75rem;justify-content:center;}
+.pw-btn{background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;color:var(--bg);
+  padding:.75rem 2rem;border-radius:9px;font-family:var(--fb);font-size:.88rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.pw-btn:hover{opacity:.85;transform:translateY(-1px);}
+.pw-cancel{background:var(--glass);border:1px solid var(--border);color:var(--muted);
+  padding:.75rem 1.5rem;border-radius:9px;font-size:.88rem;cursor:pointer;transition:all .2s;}
+.pw-cancel:hover{border-color:var(--muted);color:var(--text);}
+
+/* FOOTER */
+footer{position:relative;z-index:1;background:rgba(2,8,24,.85);border-top:1px solid var(--border);
+  padding:2rem;text-align:center;backdrop-filter:blur(20px);}
+.flogo{font-family:var(--fh);font-size:1rem;letter-spacing:.15em;margin-bottom:.5rem;
+  background:linear-gradient(90deg,var(--cyan),var(--violet));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+footer p{color:var(--dim);font-size:.76rem;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .hero h1{font-size:clamp(1.8rem,7vw,3rem);}
+  .hero-stats{gap:1.5rem;}
+  .adm-sidebar{width:200px;}
+  .fgrid{grid-template-columns:1fr;}
+  .sgrid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:520px){
+  .adm-panel{flex-direction:column;}
+  .adm-sidebar{width:100%;height:auto;flex-direction:row;padding:.5rem;}
+  .adm-nav{display:flex;flex-direction:row;padding:0;overflow-x:auto;}
+  .ani{flex-direction:column;gap:.2rem;font-size:.6rem;padding:.4rem .6rem;min-width:58px;text-align:center;}
+  .adm-logo-w,.adm-foot{display:none;}
+  .adm-main{padding:1.25rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="grid-bg"></div>
+<div class="orb o1"></div>
+<div class="orb o2"></div>
+<div class="orb o3"></div>
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">FARIS ZARYAN</div>
+  <div class="nav-links">
+    <button class="nl on" id="nl-home" onclick="showPage('home')">Home</button>
+    <button class="nl" id="nl-shop" onclick="showPage('shop')">Shop</button>
+    <button class="nl" id="nl-about" onclick="showPage('about')">About</button>
+    <button class="nl" id="nl-contact" onclick="showPage('contact')">Contact</button>
+  </div>
+  <div class="nav-right">
+    <button class="btn-cart" onclick="openCart()">🛒 Cart <span class="cbadge" id="cc">0</span></button>
+    <button class="btn-adm" onclick="openAdmin()">⚙ Admin</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="pg-home">
+  <section class="hero">
+    <div class="hero-tag" id="h-eyebrow">Est. 2008 · Premium Bookstore</div>
+    <h1><span class="h1-l1" id="h-l1">Discover Your Next</span><span class="h1-l2" id="h-l2">Great Adventure</span></h1>
+    <p class="hero-sub" id="h-sub">Curated shelves of literary fiction, rare editions, and beloved classics.</p>
+    <div class="hero-cta">
+      <button class="btn-p" id="h-btn1" onclick="showPage('shop')">Browse Collection</button>
+      <button class="btn-s" id="h-btn2" onclick="showPage('about')">Our Story</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hstat-val" id="hs-books">0</div><div class="hstat-label">Books</div></div>
+      <div><div class="hstat-val" id="hs-cats">0</div><div class="hstat-label">Categories</div></div>
+      <div><div class="hstat-val">⭐ 4.8</div><div class="hstat-label">Avg Rating</div></div>
+    </div>
+  </section>
+  <div class="search-wrap" id="sw-home">
+    <div class="sbox"><span class="sicon">🔍</span><input type="text" id="si1" placeholder="Search titles, authors…"/><button onclick="doSearch(1)">Search</button></div>
+  </div>
+  <div class="cat-bar" id="cb1"></div>
+  <div class="sec">
+    <div class="sec-hdr"><div class="sec-title">Featured Books</div><button class="btn-va" onclick="showPage('shop')">View All →</button></div>
+    <div class="bgrid" id="gr-feat"></div>
+  </div>
+  <div class="sec" style="padding-top:0">
+    <div class="sec-hdr"><div class="sec-title">Bestsellers</div></div>
+    <div class="bgrid" id="gr-best"></div>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div id="pg-shop" style="display:none">
+  <div class="search-wrap">
+    <div class="sbox"><span class="sicon">🔍</span><input type="text" id="si2" placeholder="Search titles, authors…"/><button onclick="doSearch(2)">Search</button></div>
+  </div>
+  <div class="cat-bar" id="cb2"></div>
+  <div class="sec">
+    <div class="sec-hdr"><div class="sec-title">All Books</div></div>
+    <div class="bgrid" id="gr-shop"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="pg-about" style="display:none">
+  <div class="psec"><div class="ptitle">Our Story</div><div class="pbox" id="about-box"></div></div>
+</div>
+
+<!-- CONTACT -->
+<div id="pg-contact" style="display:none">
+  <div class="psec"><div class="ptitle">Get In Touch</div><div id="contact-box"></div></div>
+</div>
+
+<footer><div class="flogo">FARIS ZARYAN</div><p>© 2025 Faris Zaryan Bookstore · All rights reserved · Crafted with passion for readers</p></footer>
+
+<!-- CART -->
+<div class="overlay" id="cart-ov" onclick="ccClick(event)">
+  <div class="cart-panel">
+    <div class="cart-hdr"><h2>◆ Your Cart</h2><button class="xbtn" onclick="closeCart()">✕</button></div>
+    <div id="cart-list"></div>
+    <div id="cart-ft"></div>
+  </div>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div class="pw-overlay" id="pw-ov">
+  <div class="pw-box">
+    <div class="pw-icon">🔐</div>
+    <div class="pw-title">Admin Access</div>
+    <div class="pw-sub">Enter the admin password to continue</div>
+    <div class="pw-input-wrap">
+      <input type="password" id="pw-in" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()"/>
+      <button class="pw-eye" onclick="togglePwEye()" id="pw-eye-btn">👁</button>
+    </div>
+    <div class="pw-err" id="pw-err"></div>
+    <div class="pw-actions">
+      <button class="pw-btn" onclick="checkPw()">Unlock →</button>
+      <button class="pw-cancel" onclick="closePwModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="adm-overlay" id="adm-ov">
+  <div class="adm-panel">
+    <div class="adm-sidebar">
+      <div class="adm-logo-w"><div class="adm-logo-t">FARIS ZARYAN</div><div class="adm-logo-s">Admin Panel</div></div>
+      <div class="adm-nav">
+        <div class="ani on" id="at-db" onclick="aTab('db')"><span class="ani-icon">📊</span>Dashboard</div>
+        <div class="ani" id="at-bks" onclick="aTab('bks')"><span class="ani-icon">📚</span>Books</div>
+        <div class="ani" id="at-add" onclick="aTab('add')"><span class="ani-icon">➕</span>Add Book</div>
+        <div class="ani" id="at-hr" onclick="aTab('hr')"><span class="ani-icon">🖼</span>Hero</div>
+        <div class="ani" id="at-ct" onclick="aTab('ct')"><span class="ani-icon">🏷</span>Categories</div>
+        <div class="ani" id="at-pg" onclick="aTab('pg')"><span class="ani-icon">📄</span>Pages</div>
+        <div class="ani" id="at-st" onclick="aTab('st')"><span class="ani-icon">⚙️</span>Settings</div>
+      </div>
+      <div class="adm-foot"><button class="adm-close" onclick="closeAdmin()">✕ Close Admin</button></div>
+    </div>
+    <div class="adm-main">
+
+      <!-- DASHBOARD -->
+      <div class="as on" id="as-db">
+        <div class="apt">Dashboard</div><div class="asub">Welcome to Faris Zaryan Admin</div>
+        <div class="sgrid">
+          <div class="scard"><div class="sval" id="ds-bk">0</div><div class="slbl">Total Books</div></div>
+          <div class="scard"><div class="sval" id="ds-ct">0</div><div class="slbl">Categories</div></div>
+          <div class="scard"><div class="sval" id="ds-fe">0</div><div class="slbl">Featured</div></div>
+          <div class="scard"><div class="sval" id="ds-ca">0</div><div class="slbl">Cart Items</div></div>
+        </div>
+        <div class="sblock"><h3>Quick Guide</h3>
+          <p style="color:var(--muted);font-size:.84rem;line-height:1.85">
+            📚 <b style="color:var(--text)">Books</b> — View & manage your entire catalogue<br>
+            ➕ <b style="color:var(--text)">Add Book</b> — Add new titles with cover color & badge<br>
+            🖼 <b style="color:var(--text)">Hero</b> — Edit homepage banner & buttons<br>
+            🏷 <b style="color:var(--text)">Categories</b> — Manage genre filters<br>
+            📄 <b style="color:var(--text)">Pages</b> — Edit About & Contact content<br>
+            ⚙️ <b style="color:var(--text)">Settings</b> — Store name, currency, feature toggles
+          </p>
+        </div>
+      </div>
+
+      <!-- BOOKS -->
+      <div class="as" id="as-bks">
+        <div class="apt">Manage Books</div><div class="asub">Edit or delete any book in your catalogue.</div>
+        <div class="twrap"><table class="atbl">
+          <thead><tr><th>Cover</th><th>Title</th><th>Author</th><th>Price</th><th>Category</th><th>Stock</th><th>Featured</th><th>Actions</th></tr></thead>
+          <tbody id="a-tbody"></tbody>
+        </table></div>
+      </div>
+
+      <!-- ADD/EDIT -->
+      <div class="as" id="as-add">
+        <div class="apt" id="add-ttl">Add New Book</div><div class="asub">Fill in details and pick a cover color.</div>
+        <input type="hidden" id="eid"/>
+        <div class="fgrid">
+          <div class="fg"><label class="flbl">Title *</label><input class="fi" type="text" id="f-ti" placeholder="e.g. The Midnight Library"/></div>
+          <div class="fg"><label class="flbl">Author *</label><input class="fi" type="text" id="f-au" placeholder="e.g. Matt Haig"/></div>
+          <div class="fg"><label class="flbl">Price ($) *</label><input class="fi" type="number" id="f-pr" placeholder="14.99" step="0.01"/></div>
+          <div class="fg"><label class="flbl">Category</label><select class="fsel" id="f-ca"></select></div>
+          <div class="fg"><label class="flbl">Rating (0–5)</label><input class="fi" type="number" id="f-ra" placeholder="4.5" step="0.1" min="0" max="5"/></div>
+          <div class="fg"><label class="flbl">Stock</label><select class="fsel" id="f-st"><option value="in">In Stock</option><option value="out">Out of Stock</option></select></div>
+          <div class="fg"><label class="flbl">Badge</label><select class="fsel" id="f-ba"><option value="">None</option><option value="bestseller">Bestseller</option><option value="new">New</option><option value="sale">Sale</option></select></div>
+          <div class="fg"><label class="flbl">Featured?</label><select class="fsel" id="f-fe"><option value="0">No</option><option value="1">Yes</option></select></div>
+          <div class="fg full"><label class="flbl">Cover Tagline</label><input class="fi" type="text" id="f-ct" placeholder="Short tagline on the cover"/></div>
+          <div class="fg full"><label class="flbl">Cover Color</label><div class="swatches" id="sw-row"></div></div>
+        </div>
+        <div class="factions">
+          <button class="btn-save" onclick="saveBook()">💾 Save Book</button>
+          <button class="btn-cancel" onclick="resetForm()">Reset</button>
+        </div>
+      </div>
+
+      <!-- HERO -->
+      <div class="as" id="as-hr">
+        <div class="apt">Hero Banner</div><div class="asub">Edit the homepage hero section.</div>
+        <div class="fg" style="margin-bottom:1rem"><label class="flbl">Eyebrow Tag</label><input class="fi" type="text" id="he-ey" placeholder="Est. 2008 · Premium Bookstore"/></div>
+        <div class="fgrid">
+          <div class="fg"><label class="flbl">Headline Line 1</label><input class="fi" type="text" id="he-l1"/></div>
+          <div class="fg"><label class="flbl">Headline Line 2 (accent)</label><input class="fi" type="text" id="he-l2"/></div>
+          <div class="fg full"><label class="flbl">Subtext</label><textarea class="fta" id="he-sb"></textarea></div>
+          <div class="fg"><label class="flbl">Primary Button</label><input class="fi" type="text" id="he-b1"/></div>
+          <div class="fg"><label class="flbl">Secondary Button</label><input class="fi" type="text" id="he-b2"/></div>
+        </div>
+        <div class="factions"><button class="btn-save" onclick="saveHero()">💾 Save Hero</button></div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="as" id="as-ct">
+        <div class="apt">Categories</div><div class="asub">Manage genre filter chips.</div>
+        <div style="display:flex;gap:.75rem;max-width:400px">
+          <input class="fi" type="text" id="new-cat" placeholder="New category name…" style="flex:1"/>
+          <button class="btn-save" onclick="addCat()" style="white-space:nowrap">+ Add</button>
+        </div>
+        <div class="cat-tags" id="cat-tags"></div>
+      </div>
+
+      <!-- PAGES -->
+      <div class="as" id="as-pg">
+        <div class="apt">Edit Pages</div><div class="asub">Update About and Contact content.</div>
+        <div class="sblock"><h3>About Page</h3>
+          <div class="fg"><textarea class="fta" id="pa-ab" rows="5"></textarea></div>
+          <button class="btn-save" style="margin-top:1rem" onclick="savePg('about')">Save About</button>
+        </div>
+        <div class="sblock"><h3>Contact Page</h3>
+          <div class="asub" style="margin-bottom:.75rem">One item per line, starting with emoji. e.g. 📍 Address here</div>
+          <div class="fg"><textarea class="fta" id="pa-co" rows="5"></textarea></div>
+          <button class="btn-save" style="margin-top:1rem" onclick="savePg('contact')">Save Contact</button>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="as" id="as-st">
+        <div class="apt">Settings</div><div class="asub">Configure your store.</div>
+        <div class="sblock"><h3>Store Identity</h3>
+          <div class="fgrid">
+            <div class="fg"><label class="flbl">Store Name</label><input class="fi" type="text" id="s-nm" value="FARIS ZARYAN"/></div>
+            <div class="fg"><label class="flbl">Currency Symbol</label><input class="fi" type="text" id="s-cu" value="$"/></div>
+          </div>
+          <div class="factions" style="margin-top:1rem"><button class="btn-save" onclick="saveSettings()">Save Settings</button></div>
+        </div>
+        <div class="sblock"><h3>Features</h3>
+          <div class="trow"><span class="tlbl">Show Search Bar</span><label class="tog"><input type="checkbox" id="tg-s" checked onchange="togFeat('search')"/><span class="tslider"></span></label></div>
+          <div class="trow"><span class="tlbl">Show Category Filters</span><label class="tog"><input type="checkbox" id="tg-c" checked onchange="togFeat('cats')"/><span class="tslider"></span></label></div>
+          <div class="trow"><span class="tlbl">Enable Shopping Cart</span><label class="tog"><input type="checkbox" id="tg-t" checked onchange="togFeat('cart')"/><span class="tslider"></span></label></div>
+        </div>
+        <div class="sblock"><h3 style="color:var(--red)">Danger Zone</h3>
+          <button class="btn-danger" onclick="resetAll()">🗑 Reset All Data to Default</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// PALETTE
+const PAL=[
+  {hex:'#0d2137',txt:'#e2eeff'},{hex:'#0a1a3a',txt:'#63b3ff'},
+  {hex:'#1a0d37',txt:'#c4b5fd'},{hex:'#0d2818',txt:'#6ee7b7'},
+  {hex:'#2d1200',txt:'#fbbf24'},{hex:'#1a0020',txt:'#f0abfc'},
+  {hex:'#001a2d',txt:'#7dd3fc'},{hex:'#1a1a00',txt:'#fde68a'},
+  {hex:'#1a000d',txt:'#fca5a5'},{hex:'#001a1a',txt:'#67e8f9'},
+];
+let selC=PAL[0];
+
+const DEF={
+  books:[
+    {id:1,title:"The Midnight Library",author:"Matt Haig",price:14.99,cat:"Fiction",rating:4.8,stock:"in",badge:"bestseller",featured:1,coverText:"Between life and death",color:PAL[0]},
+    {id:2,title:"Educated",author:"Tara Westover",price:13.49,cat:"Memoir",rating:4.7,stock:"in",badge:"",featured:1,coverText:"A memoir",color:PAL[1]},
+    {id:3,title:"Project Hail Mary",author:"Andy Weir",price:15.99,cat:"Sci-Fi",rating:4.9,stock:"in",badge:"new",featured:1,coverText:"One man. One mission.",color:PAL[2]},
+    {id:4,title:"The Alchemist",author:"Paulo Coelho",price:11.99,cat:"Fiction",rating:4.6,stock:"in",badge:"bestseller",featured:1,coverText:"Follow your dreams",color:PAL[3]},
+    {id:5,title:"Sapiens",author:"Yuval Noah Harari",price:17.99,cat:"History",rating:4.8,stock:"in",badge:"",featured:0,coverText:"Brief history",color:PAL[4]},
+    {id:6,title:"Atomic Habits",author:"James Clear",price:16.99,cat:"Self-Help",rating:4.9,stock:"in",badge:"bestseller",featured:0,coverText:"Tiny changes, big results",color:PAL[5]},
+    {id:7,title:"Dune",author:"Frank Herbert",price:13.99,cat:"Sci-Fi",rating:4.8,stock:"in",badge:"",featured:0,coverText:"Epic of a faraway world",color:PAL[6]},
+    {id:8,title:"Klara and the Sun",author:"Kazuo Ishiguro",price:16.50,cat:"Fiction",rating:4.5,stock:"in",badge:"",featured:0,coverText:"Nobel Prize winner",color:PAL[7]},
+  ],
+  categories:["All","Fiction","Memoir","Sci-Fi","History","Self-Help","Mystery","Poetry"],
+  hero:{eyebrow:"Est. 2008 · Premium Bookstore",l1:"Discover Your Next",l2:"Great Adventure",sub:"Curated shelves of literary fiction, rare editions, and beloved classics. Your next obsession awaits.",btn1:"Browse Collection",btn2:"Our Story"},
+  about:"Founded with a passion for the written word, Faris Zaryan Bookstore has grown into a destination for readers seeking both timeless classics and cutting-edge contemporary literature. Every title is hand-picked by our team of devoted readers. We believe books have the power to transform lives — we are here to connect you with your next great story.",
+  contact:"📍 14 Bloomsbury Lane, London, WC1A 2PH\n📞 +44 20 7946 0921\n✉️ hello@fariszaryan.co.uk\n🕐 Mon–Sat: 9am–8pm  |  Sun: 11am–6pm",
+  settings:{name:"FARIS ZARYAN",currency:"$"},
+  features:{search:true,cats:true,cart:true},
+};
+
+function loadDB(){try{const s=localStorage.getItem('fzDB2');return s?JSON.parse(s):JSON.parse(JSON.stringify(DEF));}catch{return JSON.parse(JSON.stringify(DEF));}}
+function saveDB(){localStorage.setItem('fzDB2',JSON.stringify(db));}
+let db=loadDB();
+let cart=[];
+let aCat="All";
+let srchQ="";
+let nid=db.books.length?Math.max(...db.books.map(b=>b.id))+1:1;
+
+function stars(r){return'★'.repeat(Math.floor(r))+(r%1>=.5?'½':'')+` ${r}`;}
+
+function bCard(b){
+  const cur=db.settings?.currency||'$';
+  const badge=b.badge?`<span class="bbadge bb-${b.badge}">${b.badge}</span>`:'';
+  return`<div class="bcard">
+    <div class="bcover" style="background:${b.color?.hex||'#0d2137'};color:${b.color?.txt||'#e2eeff'}">
+      ${badge}
+      <div class="bctitle">${b.title}</div>
+      ${b.coverText?`<div class="bcsub">${b.coverText}</div>`:''}
+    </div>
+    <div class="binfo">
+      <div class="bstars">${stars(b.rating||4)}</div>
+      <div class="btitle">${b.title}</div>
+      <div class="bauthor">${b.author}</div>
+      <div class="bfooter">
+        <div class="bprice">${cur}${parseFloat(b.price).toFixed(2)}</div>
+        <button class="btn-add" onclick="addToCart(${b.id})">+ Cart</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAll(){renderHeroUI();renderCats();renderBooks();renderAbout();renderContact();updCC();}
+
+function renderHeroUI(){
+  const h=db.hero;
+  document.getElementById('h-eyebrow').textContent=h.eyebrow;
+  document.getElementById('h-l1').textContent=h.l1;
+  document.getElementById('h-l2').textContent=h.l2;
+  document.getElementById('h-sub').textContent=h.sub;
+  document.getElementById('h-btn1').textContent=h.btn1;
+  document.getElementById('h-btn2').textContent=h.btn2;
+  document.getElementById('hs-books').textContent=db.books.length;
+  document.getElementById('hs-cats').textContent=db.categories.filter(c=>c!=='All').length;
+}
+
+function renderCats(){
+  const h=db.categories.map(c=>`<div class="chip${c===aCat?' on':''}" onclick="setCat('${c}','1')">${c}</div>`).join('');
+  const s=db.categories.map(c=>`<div class="chip${c===aCat?' on':''}" onclick="setCat('${c}','2')">${c}</div>`).join('');
+  document.getElementById('cb1').innerHTML=h;
+  document.getElementById('cb2').innerHTML=s;
+}
+
+function getFilt(){
+  let l=db.books;
+  if(aCat!=='All') l=l.filter(b=>b.cat===aCat);
+  if(srchQ){const q=srchQ.toLowerCase();l=l.filter(b=>b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q));}
+  return l;
+}
+
+function renderBooks(){
+  const ne='<p style="color:var(--muted);padding:1rem">No books found.</p>';
+  document.getElementById('gr-feat').innerHTML=db.books.filter(b=>b.featured==1).map(bCard).join('')||ne;
+  document.getElementById('gr-best').innerHTML=db.books.filter(b=>b.badge==='bestseller').map(bCard).join('')||ne;
+  document.getElementById('gr-shop').innerHTML=getFilt().map(bCard).join('')||ne;
+  document.getElementById('hs-books').textContent=db.books.length;
+}
+
+function renderAbout(){document.getElementById('about-box').textContent=db.about||'';}
+function renderContact(){
+  const lines=(db.contact||'').split('\n').filter(Boolean);
+  document.getElementById('contact-box').innerHTML=lines.map(l=>`
+    <div class="citem"><div class="cicon">${l.split(' ')[0]}</div><div class="ctext">${l.split(' ').slice(1).join(' ')}</div></div>`).join('');
+}
+
+function setCat(c,g){aCat=c;srchQ='';renderCats();renderBooks();if(g==='1')showPage('shop');}
+function doSearch(g){
+  srchQ=document.getElementById('si'+g).value.trim();
+  renderBooks();if(g===1)showPage('shop');
+}
+
+function showPage(p){
+  ['home','shop','about','contact'].forEach(id=>{
+    document.getElementById('pg-'+id).style.display=id===p?'':'none';
+    const n=document.getElementById('nl-'+id);if(n)n.classList.toggle('on',id===p);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// CART
+function addToCart(id){
+  if(!db.features?.cart){toast('Cart is disabled');return;}
+  const b=db.books.find(x=>x.id===id);if(!b)return;
+  const ex=cart.find(c=>c.id===id);
+  if(ex)ex.qty++;else cart.push({...b,qty:1});
+  updCC();toast(`"${b.title}" added ✓`);
+}
+function remCart(id){cart=cart.filter(c=>c.id!==id);renderCart();updCC();}
+function chgQty(id,d){const it=cart.find(c=>c.id===id);if(!it)return;it.qty+=d;if(it.qty<=0)remCart(id);else{renderCart();updCC();}}
+function updCC(){
+  const n=cart.reduce((s,c)=>s+c.qty,0);
+  document.getElementById('cc').textContent=n;
+  const d=document.getElementById('ds-ca');if(d)d.textContent=n;
+}
+function openCart(){renderCart();document.getElementById('cart-ov').classList.add('open');}
+function closeCart(){document.getElementById('cart-ov').classList.remove('open');}
+function ccClick(e){if(e.target===document.getElementById('cart-ov'))closeCart();}
+function renderCart(){
+  const cur=db.settings?.currency||'$';
+  const el=document.getElementById('cart-list');
+  const ft=document.getElementById('cart-ft');
+  if(!cart.length){
+    el.innerHTML='<div class="cempty"><div class="cempty-icon">📚</div><p>Your cart is empty</p><p style="font-size:.78rem;margin-top:.4rem;color:var(--dim)">Add some books to get started</p></div>';
+    ft.innerHTML='';return;
+  }
+  el.innerHTML=cart.map(it=>`<div class="citem-row">
+    <div class="cthumb" style="background:${it.color?.hex||'#0d2137'};color:${it.color?.txt||'#e2eeff'}">${it.title}</div>
+    <div class="cinfo">
+      <div class="cititle">${it.title}</div>
+      <div class="ciauthor">${it.author}</div>
+      <div class="qrow"><button class="qbtn" onclick="chgQty(${it.id},-1)">−</button><span class="qval">${it.qty}</span><button class="qbtn" onclick="chgQty(${it.id},1)">+</button></div>
+      <div class="ciprice">${cur}${(it.price*it.qty).toFixed(2)}</div>
+      <button class="cremove" onclick="remCart(${it.id})">✕ Remove</button>
+    </div>
+  </div>`).join('');
+  const tot=cart.reduce((s,c)=>s+c.price*c.qty,0);
+  ft.innerHTML=`<div class="cart-total-row"><div class="ct-label">Total</div><div class="ct-val">${cur}${tot.toFixed(2)}</div></div>
+    <button class="btn-co" onclick="checkout()">Proceed to Checkout →</button>`;
+}
+function checkout(){toast('🎉 Order placed! Thank you!');cart=[];renderCart();updCC();closeCart();}
+
+// ADMIN PASSWORD
+const ADMIN_PW='@Faris@';
+function openAdmin(){
+  document.getElementById('pw-in').value='';
+  document.getElementById('pw-err').textContent='';
+  document.getElementById('pw-ov').classList.add('open');
+  setTimeout(()=>document.getElementById('pw-in').focus(),100);
+}
+function closePwModal(){
+  document.getElementById('pw-ov').classList.remove('open');
+}
+function checkPw(){
+  const val=document.getElementById('pw-in').value;
+  if(val===ADMIN_PW){
+    document.getElementById('pw-ov').classList.remove('open');
+    document.getElementById('adm-ov').classList.add('open');
+    updDash();
+  } else {
+    const err=document.getElementById('pw-err');
+    err.textContent='Incorrect password. Try again.';
+    document.getElementById('pw-in').value='';
+    document.getElementById('pw-in').focus();
+    setTimeout(()=>err.textContent='',3000);
+  }
+}
+function togglePwEye(){
+  const inp=document.getElementById('pw-in');
+  const btn=document.getElementById('pw-eye-btn');
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
+function closeAdmin(){document.getElementById('adm-ov').classList.remove('open');}
+function updDash(){
+  document.getElementById('ds-bk').textContent=db.books.length;
+  document.getElementById('ds-ct').textContent=db.categories.length;
+  document.getElementById('ds-fe').textContent=db.books.filter(b=>b.featured==1).length;
+  document.getElementById('ds-ca').textContent=cart.reduce((s,c)=>s+c.qty,0);
+}
+function aTab(t){
+  document.querySelectorAll('.as').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ani').forEach(n=>n.classList.remove('on'));
+  document.getElementById('as-'+t).classList.add('on');
+  document.getElementById('at-'+t).classList.add('on');
+  if(t==='bks')rABks();
+  if(t==='add'){ldSw();ldCatSel();}
+  if(t==='hr')ldHeroF();
+  if(t==='ct')rACats();
+  if(t==='pg')ldPgF();
+  if(t==='st')ldStF();
+}
+function ldSw(){
+  document.getElementById('sw-row').innerHTML=PAL.map((c,i)=>`
+    <div class="sw${selC===c?' on':''}" style="background:${c.hex}" onclick="pickC(${i})"></div>`).join('');
+}
+function pickC(i){selC=PAL[i];ldSw();}
+function ldCatSel(){document.getElementById('f-ca').innerHTML=db.categories.filter(c=>c!=='All').map(c=>`<option>${c}</option>`).join('');}
+function rABks(){
+  const cur=db.settings?.currency||'$';
+  document.getElementById('a-tbody').innerHTML=db.books.map(b=>`<tr>
+    <td><div class="tcover" style="background:${b.color?.hex||'#0d2137'}"></div></td>
+    <td style="color:var(--text);font-weight:600">${b.title}</td>
+    <td>${b.author}</td>
+    <td>${cur}${parseFloat(b.price).toFixed(2)}</td>
+    <td>${b.cat}</td>
+    <td><span class="spill sp-${b.stock}">${b.stock==='in'?'In Stock':'Out'}</span></td>
+    <td>${b.featured==1?'⭐ Yes':'—'}</td>
+    <td><div class="tacts">
+      <button class="tbtn" onclick="editBk(${b.id})">✏️ Edit</button>
+      <button class="tbtn del" onclick="delBk(${b.id})">🗑</button>
+    </div></td>
+  </tr>`).join('');
+}
+function editBk(id){
+  const b=db.books.find(x=>x.id===id);if(!b)return;
+  aTab('add');
+  document.getElementById('add-ttl').textContent='Edit Book';
+  document.getElementById('eid').value=id;
+  document.getElementById('f-ti').value=b.title;
+  document.getElementById('f-au').value=b.author;
+  document.getElementById('f-pr').value=b.price;
+  document.getElementById('f-ra').value=b.rating||4;
+  document.getElementById('f-st').value=b.stock;
+  document.getElementById('f-ba').value=b.badge||'';
+  document.getElementById('f-fe').value=b.featured;
+  document.getElementById('f-ct').value=b.coverText||'';
+  selC=b.color||PAL[0];ldSw();
+  setTimeout(()=>{document.getElementById('f-ca').value=b.cat;},50);
+}
+function delBk(id){
+  if(!confirm('Delete this book permanently?'))return;
+  db.books=db.books.filter(b=>b.id!==id);
+  saveDB();rABks();renderBooks();updDash();toast('Book deleted.');
+}
+function saveBook(){
+  const ti=document.getElementById('f-ti').value.trim();
+  const au=document.getElementById('f-au').value.trim();
+  const pr=parseFloat(document.getElementById('f-pr').value);
+  if(!ti||!au||isNaN(pr)){toast('Please fill in Title, Author, and Price.');return;}
+  const d={title:ti,author:au,price:pr,cat:document.getElementById('f-ca').value,
+    rating:parseFloat(document.getElementById('f-ra').value)||4,
+    stock:document.getElementById('f-st').value,badge:document.getElementById('f-ba').value,
+    featured:parseInt(document.getElementById('f-fe').value),
+    coverText:document.getElementById('f-ct').value,color:selC};
+  const eid=document.getElementById('eid').value;
+  if(eid){const i=db.books.findIndex(b=>b.id==eid);if(i>-1)db.books[i]={...db.books[i],...d};toast('Book updated ✓');}
+  else{db.books.push({id:nid++,...d});toast('Book added ✓');}
+  saveDB();renderBooks();updDash();resetForm();
+}
+function resetForm(){
+  document.getElementById('add-ttl').textContent='Add New Book';
+  document.getElementById('eid').value='';
+  ['f-ti','f-au','f-pr','f-ra','f-ct'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-st').value='in';document.getElementById('f-ba').value='';document.getElementById('f-fe').value='0';
+  selC=PAL[0];ldSw();
+}
+function ldHeroF(){
+  const h=db.hero;
+  document.getElementById('he-ey').value=h.eyebrow;
+  document.getElementById('he-l1').value=h.l1;
+  document.getElementById('he-l2').value=h.l2;
+  document.getElementById('he-sb').value=h.sub;
+  document.getElementById('he-b1').value=h.btn1;
+  document.getElementById('he-b2').value=h.btn2;
+}
+function saveHero(){
+  db.hero={eyebrow:document.getElementById('he-ey').value,l1:document.getElementById('he-l1').value,
+    l2:document.getElementById('he-l2').value,sub:document.getElementById('he-sb').value,
+    btn1:document.getElementById('he-b1').value,btn2:document.getElementById('he-b2').value};
+  saveDB();renderHeroUI();toast('Hero updated ✓');
+}
+function rACats(){
+  document.getElementById('cat-tags').innerHTML=db.categories.map(c=>`
+    <div class="ctag">${c}${c!=='All'?`<button onclick="delCat('${c}')">✕</button>`:''}</div>`).join('');
+}
+function addCat(){
+  const v=document.getElementById('new-cat').value.trim();
+  if(!v||db.categories.includes(v)){toast('Empty or already exists.');return;}
+  db.categories.push(v);document.getElementById('new-cat').value='';
+  saveDB();rACats();renderCats();toast('Category added ✓');
+}
+function delCat(c){db.categories=db.categories.filter(x=>x!==c);saveDB();rACats();renderCats();toast('Removed.');}
+function ldPgF(){document.getElementById('pa-ab').value=db.about||'';document.getElementById('pa-co').value=db.contact||'';}
+function savePg(p){
+  if(p==='about'){db.about=document.getElementById('pa-ab').value;renderAbout();}
+  else{db.contact=document.getElementById('pa-co').value;renderContact();}
+  saveDB();toast('Page saved ✓');
+}
+function ldStF(){
+  document.getElementById('s-nm').value=db.settings?.name||'FARIS ZARYAN';
+  document.getElementById('s-cu').value=db.settings?.currency||'$';
+  const f=db.features||{};
+  document.getElementById('tg-s').checked=f.search!==false;
+  document.getElementById('tg-c').checked=f.cats!==false;
+  document.getElementById('tg-t').checked=f.cart!==false;
+}
+function saveSettings(){
+  db.settings={name:document.getElementById('s-nm').value,currency:document.getElementById('s-cu').value};
+  saveDB();renderBooks();toast('Settings saved ✓');
+}
+function togFeat(f){
+  if(!db.features)db.features={search:true,cats:true,cart:true};
+  db.features[f]=document.getElementById(f==='search'?'tg-s':f==='cats'?'tg-c':'tg-t').checked;
+  saveDB();
+  if(f==='search')document.getElementById('sw-home').style.display=db.features.search?'':'none';
+  if(f==='cats'){document.getElementById('cb1').style.display=db.features.cats?'':'none';document.getElementById('cb2').style.display=db.features.cats?'':'none';}
+  if(f==='cart')document.querySelector('.btn-cart').style.display=db.features.cart?'':'none';
+  toast('Feature updated.');
+}
+function resetAll(){
+  if(!confirm('Reset ALL data? Cannot be undone!'))return;
+  db=JSON.parse(JSON.stringify(DEF));localStorage.removeItem('fzDB2');saveDB();renderAll();updDash();toast('Reset complete.');
+}
+function toast(m){
+  const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');
+  clearTimeout(window._tt);window._tt=setTimeout(()=>e.classList.remove('show'),3000);
+}
+
+// INIT
+renderAll();
+const _f=db.features||{};
+if(_f.search===false)document.getElementById('sw-home').style.display='none';
+if(_f.cats===false){document.getElementById('cb1').style.display='none';document.getElementById('cb2').style.display='none';}
+if(_f.cart===false)document.querySelector('.btn-cart').style.display='none';
+</script>
+</body>
+</html>
